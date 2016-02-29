@@ -1,0 +1,22 @@
+<!DOCTYPE >
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Assignment</title>
+
+  
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+      <script type="text/javascript" src="php_readfile.js"></script>  
+  </head>
+  <body>
+  
+    <form action="assignement.php1" id="read" method="post" accept-charset="utf-8">
+      <button type="submit" class="btn btn-primary btn-lg btn-block" id="btn">Read File</button>
+      <textarea class="form-control" rows="100" id="information"></textarea>
+    </form>
+
+  
+  </body>
+</html>
