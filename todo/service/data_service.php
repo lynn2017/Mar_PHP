@@ -73,4 +73,9 @@ function get_todo($id){
 	return get_todo_object($id);
 }
 
+ function update_todo($desc,$stat,$taskId){	 
+ 	update_todo_object($desc,$stat,$taskId);
+}		  
+
+
 ?>

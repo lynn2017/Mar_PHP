@@ -2,7 +2,6 @@
 require_once(__DIR__ . "/../config/constants.php");
 require_once(__DIR__ . "/domain.php");
 error_reporting(E_ALL);
-
 $users_db_file = __DIR__ . "/../data/users.json";
 
 
@@ -117,24 +116,19 @@ function init_todos_db(){
 
 function save_todo_object($todo){
  	global $todosDB;
-  	init_todos_db();		  	
+  	init_todos_db();
+  	  	
  	$todosDB["nextId"]++;
+
  	array_push($todosDB["todos"],$todo);
  	$currentUserId = get_current_user_id();
  	$todos_db_file = __DIR__ . "/../data/${currentUserId}.json";
- 	$fp = fopen($todos_db_file,'w');
- 	if(!$fp){
- 		echo "Error";
- 	}else{
- 		fwrite($fp, json_encode($todosDB));
- 		fclose($fp);
-  	  	//write JSON record
- 	}
+ 	file_put_contents($todos_db_file, json_encode($todosDB));
   	  
 }
 
 function get_todo_object($id){
-	init_todos_db();
+  	init_todos_db();		 
 }
 
 function get_todo_array($user){	
@@ -151,6 +145,55 @@ function generate_todo_id(){
 	//
 }
 
-get_todo_array(null);
+function update_todo_object($desc,$stat,$taskId){
+	global $todosDB;
+	init_todos_db();
+	switch ($stat) {
+		case 'N': 
+			$stat = todo_status_NOT_STARTED;
+ 			break;
+ 		case 'S':
+ 			$stat = todo_status_STARTED;
+ 			break;
+ 		case 'M':
+ 			$stat = todo_status_MIDWAY;
+ 			break;
+ 		case 'C':
+ 			$stat = todo_status_COMPLETE;
+ 			break;
+ 		default:
+ 			break;
+	}
+	
+ 	for ($i=0; $i < count($todosDB['todos']); $i++) { 
+ 		global $todosDB;
+ 		if($todosDB['todos'][$i]['id']==$taskId){
+ 			$todosDB['todos'][$i]['desc'] = $desc;
+ 			$todosDB['todos'][$i]['status'] = $stat;
+ 		}
+ 	}
+
+ 	$currentUserId = get_current_user_id();
+ 	$todos_db_file = __DIR__ . "/../data/${currentUserId}.json";
+ 	file_put_contents($todos_db_file, json_encode($todosDB));
+}
+
+//get_todo_array(null);
+
+function deleteTask($taskID){
+	global $todosDB;
+	init_todos_db();
+	for ($i = 0; $i<count($todosDB["todos"]);$i++) {
+		if ($todosDB["todos"][$i]["id"]==$taskID){
+			unset($todosDB["todos"][$i]);
+			$todosDB['todos'] = array_values($todosDB['todos']);
+		}
+	}
+
+	$currentUserId = get_current_user_id();
+	$todos_db_file = __DIR__ . "/../data/${currentUserId}.json";
+ 	file_put_contents($todos_db_file, json_encode($todosDB));
+}
+
 
 ?>

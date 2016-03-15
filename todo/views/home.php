@@ -37,7 +37,7 @@ require_once("header.php");
                         <label>Scheduled Date</label>
                     </div>
                     <div class="col-xs-10">
-                        <input type="text" name="scheduledDate" />
+                        <input type="date" name="scheduledDate" />
                         <input type="submit" name="action" value="Add" />
                     </div>
                 </div>

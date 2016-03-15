@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <?php
-require_once("../config/constants.php");
-require_once("../utils/ensure_session.php");
-require_once("../da/data_access.php");
-session_start();
-$userId = $_SESSION["userId"];
+require_once(__DIR__."/../config/constants.php");
+require_once(__DIR__."/../controller/ensure_session.php");
+require_once(__DIR__."/../service/data_service.php");
+$userId = $_SESSION["CURRENT_USER"];
 if (!isset($_SESSION["taskId"])) {
     redirect(VIEW . "/home.php");
 }
 
 $taskId = $_SESSION["taskId"];
-$task = getTask($taskId);
+$task = get_todo($taskId);
 unset($_SESSION["taskId"]);
 ?>
 <html lang="en">
@@ -67,7 +66,7 @@ unset($_SESSION["taskId"]);
         </div>
 
         <div class="container">
-            <form action="<?php echo CONTROLLER . "/task_controller.php" ?>" method="POST">
+            <form action="<?php echo CONTROLLER . "/todo.php" ?>" method="POST">
                 <div class="row" style="margin-top:20px">
                     <div class="col-xs-12">
                         <h4>Update Task</h4>
@@ -80,7 +79,7 @@ unset($_SESSION["taskId"]);
                     </div>
                     <div class="col-xs-10">
                         <input type="hidden" name="taskId" value="<?php echo $taskId; ?>" />
-                        <input type="text" name="description" size="100" value="<?php echo $task["description"] ?>" />
+                        <input type="text" name="description" size="100" value="<?php echo $task["desc"] ?>" />
                     </div>
                 </div>
                 <div class="clearfix" />
