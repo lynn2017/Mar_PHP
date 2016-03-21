@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Places Searchbox</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 420px;
+
+      }
+      .controls {
+        margin-top: 10px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 32px;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      #pac-input {
+        background-color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin-left: 12px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 300px;
+      }
+
+      #pac-input:focus {
+        border-color: #4d90fe;
+      }
+
+      .pac-container {
+        font-family: Roboto;
+      }
+
+      #type-selector {
+        color: #fff;
+        background-color: #4d90fe;
+        padding: 5px 11px 0px 11px;
+      }
+
+      #type-selector label {
+        font-family: Roboto;
+        font-size: 13px;
+        font-weight: 300;
+      }
+      #target {
+        width: 345px;
+      }
+
+      #places {
+        margin-left: 10px;
+      }
+
+      #title {
+        margin-left: 10px;
+      }
+
+      #top10{
+        margin-left: 40px;
+      }
+
+      #top10title {
+        margin-left: 40px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+    <div class="row">  
+      <div id="map"  class="col-md-8" ></div>
+
+      <div  class="col-md-3" > 
+
+        <h2 id="title" class="row">Earthquake Information</h2>
+    
+        <div id= "places" class="row"> </div>
+       </div>
+      </div>
+   <div class="row">
+      <h3 id="top10title">Top 10 largest earthquakes in the United States for the last 12 months</h3>
+      <div id="top10"> </div>
+   </div>
+    <script>
+      // This example adds a search box to a map, using the Google Place Autocomplete
+      // feature. People can enter geographical searches. The search box will return a
+      // pick list containing a mix of places and predicted search terms.
+
+      // This example requires the Places library. Include the libraries=places
+      // parameter when you first load the API. For example:
+      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+      function initAutocomplete() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: -33.8688, lng: 151.2195},
+          zoom: 13,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+        addingEarthQuake();
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function(){
+          searchBox.setBounds(map.getBounds());
+        });
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          // Clear out the old markers.
+          markers.forEach(function(marker){
+          marker.setMap(null);
+          });
+          markers = [];
+
+          // For each place, get the icon, name and location.
+          var bounds = new google.maps.LatLngBounds();
+          var mapPlace = {};
+          places.forEach(function(place) {
+            mapPlace = place;
+            var icon = {
+              url: place.icon,
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(25, 25)
+            };
+
+            // Create a marker for each place.
+            markers.push(new google.maps.Marker({
+              map: map,
+              icon: icon,
+              title: place.name,
+              position: place.geometry.location
+            }));
+
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+
+          });
+         
+          map.fitBounds(bounds);
+          map.setCenter(mapPlace.geometry.location);
+          map.setZoom(8);
+
+
+
+          var mapBounds = {
+            'east':map.getBounds().getNorthEast().lng(),
+            'west':map.getBounds().getSouthWest().lng(),
+            'north':map.getBounds().getNorthEast().lat(),
+            'south':map.getBounds().getSouthWest().lat(),
+          };
+
+          console.log(mapBounds);
+
+          geoApi(mapBounds);
+          
+          // end the passing
+     
+        });
+
+      
+
+//$().ready(function(){
+  function addingEarthQuake(){
+      var mapBounds = {
+      'east':-62.5,
+      'west':-125.4,
+      'north':52.1,
+      'south':24.7,
+      };
+
+      var url = 'http://api.geonames.org/earthquakesJSON?east='+mapBounds.east+'&west='+mapBounds.west+'&north='+mapBounds.north+'&south='+mapBounds.south+'&username=lin912&date=2016-03-20&minMagnitude=4.9';
+
+      $.ajax({
+          url:url,
+          type:'GET',
+          dataType:'json',
+      })
+
+      .done(function(usaEarthquakes){
+        console.log(usaEarthquakes);
+        usaEarthquakes=usaEarthquakes.earthquakes;
+
+      for (var i= 0; i<usaEarthquakes.length; i++){
+        $('#top10').append('Datetime:'+usaEarthquakes[i]['datetime']+' '+'Magnitude:'+usaEarthquakes[i].magnitude+'<br />');
+        }  
+ //});
+      });
+}
+        var geoApi= function(mapBounds){
+            var data = {
+              'east':mapBounds.east,
+              'west':mapBounds.west,
+              'north':mapBounds.north,
+              'south':mapBounds.south,
+            };
+
+            var url = 'http://api.geonames.org/earthquakesJSON?east='+data.east+'&west='+data.west+'&north='+data.north+'&south='+data.south+'&username=lin912&maxRows=15';
+
+            $.ajax({
+              url:url,
+              type:'POST',
+              dataType:'json',
+              data:data
+            })
+
+            .done(function(result){
+              console.log(result);
+
+            var infowindow = new google.maps.InfoWindow(), marker, i;
+
+            result=result.earthquakes;
+
+            for (var i= 0; i<result.length; i++){
+              var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(result[i]['lat'], result[i]['lng']),
+                map: map
+              });
+
+              $('#places').append('Datetime:'+result[i]['datetime']+' '+'Magnitude:'+result[i]['magnitude']+'<br />');
+
+            google.maps.event.addListener(marker, 'click', (function(marker, i) {
+              return function() {
+                infowindow.setContent('Magnitude:'+'<br/>'+result[i]['magnitude'].toString());
+                infowindow.open(map, marker);
+            }
+            })(marker, i));
+
+            }   
+            //put the marker
+            })
+            .fail(function(){
+              console.log('error');
+            });
+
+
+        } 
+
+    
+
+        
+      }
+    
+   
+
+
+
+    
+    </script>
+    <script src="https://code.jquery.com/jquery-2.2.2.js" integrity="sha256-4/zUCqiq0kqxhZIyp4G0Gk+AOtCJsY1TA00k5ClsZYE=" crossorigin="anonymous"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdO1Gy9SwoHmYwwtjpeR8Rx_JI_brk4iQ&libraries=places&callback=initAutocomplete"></script>
+    
+  </body>
+</html>
