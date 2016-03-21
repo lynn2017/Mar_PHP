@@ -1,0 +1,37 @@
+{
+	"name": "General Knowledge",
+	"duration": 1,
+	"questions": [
+		{
+			"id": 1,
+			"statement": "Which one of the following is a search engine?",
+			"choices": [
+				"Google",
+				"Altavista",
+				"Dogpile",
+				"Maltavista"
+			]			
+		},
+		{
+			"id": 2,
+			"statement": "Which one of the following is a number?",
+			"choices": [
+				"10",
+				"Altavista",
+				"Dogpile",
+				"100"
+			]			
+		}
+	],
+	"answers": {
+		"1": [			
+			"Google",
+			"Altavista",
+			"Dogpile"
+		],
+		"2": [
+			"10",
+			"100"
+		]
+	}
+}
