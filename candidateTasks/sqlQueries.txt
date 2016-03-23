@@ -1,0 +1,50 @@
+Tables (pseudocode):
+
+user {
+id integer auto_increment,
+name vachar
+}
+
+salary {
+id integer auto_increment,
+userId integer, # link to user table
+dateofSalary timestamp, # date/time when user received salary
+sum decimal
+}
+
+Task:
+All tasks should be resolved by ONE SQL query (no php loops),
+user name should be listed in results of query
+
+
+a) Design SQL which lists user(s) with biggest total salary from April to November.
+Show user name and overall salary amount
+b) Design SQL which shows users who haven't received salary yet
+
+
+
+CREATE DATABASE my_db;
+
+CREATE TABLE User(
+id int NOT NULL,
+name varchar(255) NOT NULL,
+PRIMARY KEY (id)
+);
+
+CREATE TABLE salary(
+id int NOT NULL,
+userId int NOT NULL,
+dateofSalary timestamp,
+sum decimal, 
+PRIMARY KEY (id)
+);
+
+
+
+
+
+
+
+select user.id, user.name, sum(salary.sum) AS Total from user inner join salary on user.id=salary.userId 
+where dateofSalary between 04-01-2016 and 11-01-2016
+HAVING MAX(Total);
